@@ -6,25 +6,6 @@ from django.conf import settings
 
 # Create your views here.
 
-RAMOS = ["TVD", "BD", "POO", "ML", "AWS"]
-SECCIONES = ["A", "B", "C", "D", "E", "F", "G"]
-TOTAL_ALUMNOS = 210
-
-lista_alumnos = []
-
-for i in range(1, TOTAL_ALUMNOS + 1):
-    notas_alumno = {}
-    for ramo in RAMOS:
-        notas_alumno[ramo] = {
-            "nota1": round(random.uniform(1.0, 7.0), 1),
-            "nota2": round(random.uniform(1.0, 7.0), 1),
-            "nota3": round(random.uniform(1.0, 7.0), 1),
-        }
-
-    Alumno = {"id": i, "seccion": random.choice(SECCIONES), "notas": notas_alumno}
-
-    lista_alumnos.append(Alumno)
-
 
 # Cargar datos de shopping trends
 def load_shopping_data():
@@ -74,7 +55,7 @@ def dashboard_home(request):
             "descripcion": "Distribución de montos de compra",
             "categoria": "Shopping",
             "url": "histograma_poder_adquisitivo",
-            "color": "danger",
+            "color": "primary",
         },
         {
             "id": 6,
@@ -174,73 +155,7 @@ def menu(request):
     return render(request, "base.html")
 
 
-def total_alumnos(request):
-    total = len(lista_alumnos)
-
-    context = {"total_alumnos": total}
-
-    return render(request, "total_alumnos.html", context)
-
-
-def total_secciones(request):
-    conteo_secciones = {sec: 0 for sec in SECCIONES}
-
-    for alumno in lista_alumnos:
-        seccion = alumno["seccion"]
-        conteo_secciones[seccion] += 1
-
-    context = {
-        "labels": list(conteo_secciones.keys()),
-        "data": list(conteo_secciones.values()),
-    }
-
-    return render(request, "total_secciones.html", context)
-
-
-def notas1_ramos(request):
-    promedios = {ramo: 0 for ramo in RAMOS}
-
-    for alumno in lista_alumnos:
-        for ramo in RAMOS:
-            promedios[ramo] += alumno["notas"][ramo]["nota1"]
-
-    for ramo in RAMOS:
-        promedios[ramo] = round(promedios[ramo] / TOTAL_ALUMNOS, 2)
-
-    context = {"labels": list(promedios.keys()), "data": list(promedios.values())}
-
-    return render(request, "notas1.html", context)
-
-
-def promedio_tvd_seccion(request):
-    stats_tvd = {sec: {"suma": 0, "conteo": 0} for sec in SECCIONES}
-
-    for alumno in lista_alumnos:
-        seccion = alumno["seccion"]
-        nota_tvd_1 = alumno["notas"]["TVD"]["nota1"]
-
-        stats_tvd[seccion]["suma"] += nota_tvd_1
-        stats_tvd[seccion]["conteo"] += 1
-
-    promedios_finales = {}
-    for seccion in SECCIONES:
-        suma = stats_tvd[seccion]["suma"]
-        conteo = stats_tvd[seccion]["conteo"]
-
-        if conteo > 0:
-            promedios_finales[seccion] = round(suma / conteo, 2)
-        else:
-            promedios_finales[seccion] = 0.0
-
-    context = {
-        "labels": list(promedios_finales.keys()),
-        "data": list(promedios_finales.values()),
-    }
-
-    return render(request, "promedio_tvd.html", context)
-
-
-# ========== VISTAS PARA SHOPPING TRENDS ==========
+# VISTAS PARA SHOPPING TRENDS
 
 
 # 1. Histograma de Poder Adquisitivo (USD)

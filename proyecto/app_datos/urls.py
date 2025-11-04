@@ -4,10 +4,6 @@ from . import views
 
 urlpatterns = [
     path("", views.dashboard_home, name="dashboard_home"),
-    path("total-alumnos/", views.total_alumnos, name="total_alumnos"),
-    path("total-secciones/", views.total_secciones, name="total_secciones"),
-    path("notas1-ramos/", views.notas1_ramos, name="notas1_ramos"),
-    path("promedio-tvd/", views.promedio_tvd_seccion, name="promedio_tvd"),
     # Shopping Trends URLs
     path(
         "shopping/histograma-poder-adquisitivo/",

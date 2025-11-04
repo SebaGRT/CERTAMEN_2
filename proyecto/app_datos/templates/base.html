@@ -19,30 +19,35 @@
             .sidebar {
                 width: 230px;
                 flex-shrink: 0;
-                background-color: #fafafa;
-                border-right: 1px solid #dee2e6;
+                background-color: #5a7aeb;
+                border-right: 1px solid #000;
                 overflow-y: auto;
                 max-height: 100vh;
             }
-
             .content {
                 flex-grow: 1;
                 padding: 2rem;
             }
-
             .nav-link.active {
                 background-color: #e6e6fa !important;
                 color: #000 !important;
             }
-
             .nav-link {
-                color: #000;
+                color: #fff;
+                font-weight: bolder;
+            }
+            .nav-link:hover {
+                color: #5a7aeb;
+                background-color: #fff;
+            }
+            .nav-link:focus {
+                scale: 0.95;
             }
         </style>
     </head>
     <body>
         <div class="sidebar p-3">
-            <h4 class="mb-3">Dashboard Gerencial</h4>
+            <h4 class="mb-3">Menú</h4>
             <ul class="nav nav-pills flex-column">
                 <li class="nav-item mb-3">
                     <a
@@ -54,9 +59,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <h6 class="text-muted mt-4 mb-2">
-                        Gráficos de las Tendencias
-                    </h6>
+                    <h6 class="mt-4 mb-2">Gráficos de las Tendencias</h6>
                 </li>
                 <li class="nav-item">
                     <a
