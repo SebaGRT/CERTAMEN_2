@@ -1,53 +1,213 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Home - Shopping Trends{% endblock %}
+
+{% block content %}
 <div class="container-fluid">
+    <!-- Header -->
     <div class="row mb-4">
         <div class="col-12">
-            <h1 class="display-4">Dashboard</h1>
+            <h1 class="display-4">
+                <i class="bi bi-speedometer2"></i> Dashboard Principal
+            </h1>
             <p class="lead text-muted">
-                Selecciona un gráfico para ver el gráfico en más detalle
+                Sistema de Análisis de Tendencias de Compras
             </p>
         </div>
     </div>
 
-    <!-- Shopping Trends -->
+    <!-- Estadísticas principales -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100 card-hover">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">
+                                <i class="bi bi-people"></i> Total Clientes
+                            </h6>
+                            <h2 class="mb-0 text-primary fw-bold">
+                                {{ total_customers }}
+                            </h2>
+                            <small class="text-success">
+                                <i class="bi bi-arrow-up"></i> Activos en el sistema
+                            </small>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                            <i class="bi bi-people fs-1 text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{% url 'customers_list' %}" class="btn btn-sm btn-outline-primary w-100">
+                        Ver todos los clientes <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100 card-hover">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">
+                                <i class="bi bi-receipt"></i> Transacciones
+                            </h6>
+                            <h2 class="mb-0 text-success fw-bold">
+                                {{ total_transactions }}
+                            </h2>
+                            <small class="text-info">
+                                <i class="bi bi-graph-up"></i> Total registradas
+                            </small>
+                        </div>
+                        <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                            <i class="bi bi-receipt fs-1 text-success"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{% url 'transactions_list' %}" class="btn btn-sm btn-outline-success w-100">
+                        Ver transacciones <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100 card-hover">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="text-muted mb-2">
+                                <i class="bi bi-box-seam"></i> Productos
+                            </h6>
+                            <h2 class="mb-0 text-warning fw-bold">
+                                {{ total_products }}
+                            </h2>
+                            <small class="text-primary">
+                                <i class="bi bi-collection"></i> En catálogo
+                            </small>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                            <i class="bi bi-box-seam fs-1 text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <a href="{% url 'products_list' %}" class="btn btn-sm btn-outline-warning w-100">
+                        Ver productos <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones rápidas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-gradient bg-primary text-white py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightning-charge-fill"></i> Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <a href="{% url 'data_management' %}" class="btn btn-lg btn-outline-primary w-100 py-3">
+                                <i class="bi bi-database fs-3 d-block mb-2"></i>
+                                Gestión de Datos
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'csv_upload' %}" class="btn btn-lg btn-outline-info w-100 py-3">
+                                <i class="bi bi-file-earmark-arrow-up fs-3 d-block mb-2"></i>
+                                Cargar CSV
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'customer_add' %}" class="btn btn-lg btn-outline-success w-100 py-3">
+                                <i class="bi bi-person-plus fs-3 d-block mb-2"></i>
+                                Nuevo Cliente
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'transaction_add' %}" class="btn btn-lg btn-outline-warning w-100 py-3">
+                                <i class="bi bi-receipt-cutoff fs-3 d-block mb-2"></i>
+                                Nueva Transacción
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos de Tendencias -->
     <div class="row mb-4">
         <div class="col-12">
             <h2 class="h3 mb-3">
-                <span class="badge bg-success">Tendencias de Compras</span>
+                <i class="bi bi-bar-chart-line"></i>
+                <span class="badge bg-gradient bg-success">Análisis y Visualizaciones</span>
             </h2>
+            <p class="text-muted">
+                Selecciona una visualización para explorar los datos en detalle
+            </p>
         </div>
     </div>
-    <div class="row mb-5 justify-content-center">
-        {% for grafico in graficos %} {% if grafico.categoria == "Shopping" %}
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+
+    <div class="row g-4 mb-5">
+        {% for grafico in graficos %}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
             <a href="{% url grafico.url %}" class="text-decoration-none">
-                <div
-                    class="card h-100 shadow-sm grafico-card border-{{ grafico.color }}"
-                >
+                <div class="card h-100 shadow-sm grafico-card border-top border-{{ grafico.color }} border-3">
                     <div class="card-body text-center">
                         <div class="grafico-icono mb-3">
-                            <span style="font-size: 3rem"
-                                >{{ grafico.icono }}</span
-                            >
+                            <div class="icon-circle bg-{{ grafico.color }} bg-opacity-10 mx-auto d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; border-radius: 50%;">
+                                <i class="bi bi-graph-up fs-1 text-{{ grafico.color }}"></i>
+                            </div>
                         </div>
-                        <h5 class="card-title text-{{ grafico.color }}">
-                            {{ grafico.id }}. {{ grafico.titulo }}
-                        </h5>
-                        <p class="card-text text-muted small">
+                        <h6 class="card-title text-{{ grafico.color }} fw-bold">
+                            {{ grafico.titulo }}
+                        </h6>
+                        <p class="card-text text-muted small mb-0">
                             {{ grafico.descripcion }}
                         </p>
                     </div>
-                    <div
-                        class="card-footer bg-{{ grafico.color }} bg-opacity-10 text-center"
-                    >
+                    <div class="card-footer bg-{{ grafico.color }} bg-opacity-10 text-center border-0">
                         <small class="text-{{ grafico.color }} fw-bold">
-                            Ver análisis →
+                            <i class="bi bi-eye"></i> Ver análisis
                         </small>
                     </div>
                 </div>
             </a>
         </div>
-        {% endif %} {% endfor %}
+        {% endfor %}
+    </div>
+
+    <!-- Información adicional -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm bg-light">
+                <div class="card-body text-center py-4">
+                    <h5 class="mb-3">
+                        <i class="bi bi-info-circle"></i> ¿Necesitas ayuda?
+                    </h5>
+                    <p class="text-muted mb-3">
+                        Explora las visualizaciones para obtener insights sobre las tendencias de compra, o gestiona los datos directamente desde el panel de administración.
+                    </p>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <a href="{% url 'data_management' %}" class="btn btn-primary">
+                            <i class="bi bi-gear"></i> Panel de Gestión
+                        </a>
+                        <a href="/admin/" class="btn btn-outline-secondary" target="_blank">
+                            <i class="bi bi-shield-lock"></i> Admin Django
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -55,16 +215,12 @@
     .grafico-card {
         transition: all 0.3s ease;
         cursor: pointer;
-        border-width: 2px;
+        overflow: hidden;
     }
 
     .grafico-card:hover {
-        transform: translateY(-10px);
+        transform: translateY(-8px);
         box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
-    }
-
-    .grafico-card:focus {
-        scale: 0.95;
     }
 
     .grafico-icono {
@@ -72,11 +228,16 @@
     }
 
     .grafico-card:hover .grafico-icono {
-        transform: scale(1.2);
+        transform: scale(1.1) rotate(5deg);
     }
 
-    .card-footer {
-        border-top: 2px solid rgba(0, 0, 0, 0.05);
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+
+    .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.15) !important;
     }
 
     a {
@@ -99,6 +260,18 @@
 
     .lead {
         font-size: 1.1rem;
+    }
+
+    .icon-circle {
+        transition: transform 0.3s ease;
+    }
+
+    .grafico-card:hover .icon-circle {
+        transform: scale(1.15);
+    }
+
+    .bg-gradient {
+        background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%);
     }
 </style>
 {% endblock %}

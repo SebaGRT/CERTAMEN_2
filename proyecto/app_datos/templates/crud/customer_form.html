@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4">
+                <i class="bi bi-person-plus"></i> {{ title }}
+            </h1>
+            <p class="lead text-muted">Complete el formulario con los datos del cliente</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clipboard-data"></i> Información del Cliente
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" id="customerForm">
+                        {% csrf_token %}
+
+                        <div class="row g-3">
+                            <!-- Edad -->
+                            <div class="col-md-6">
+                                <label for="{{ form.age.id_for_label }}" class="form-label">
+                                    <i class="bi bi-calendar3"></i> Edad *
+                                </label>
+                                {{ form.age }}
+                                {% if form.age.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.age.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Género -->
+                            <div class="col-md-6">
+                                <label for="{{ form.gender.id_for_label }}" class="form-label">
+                                    <i class="bi bi-gender-ambiguous"></i> Género *
+                                </label>
+                                {{ form.gender }}
+                                {% if form.gender.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.gender.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Ubicación -->
+                            <div class="col-md-6">
+                                <label for="{{ form.id_location.id_for_label }}" class="form-label">
+                                    <i class="bi bi-geo-alt"></i> Ubicación *
+                                </label>
+                                {{ form.id_location }}
+                                {% if form.id_location.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.id_location.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Método de Pago Preferido -->
+                            <div class="col-md-6">
+                                <label for="{{ form.id_paymentmethod.id_for_label }}" class="form-label">
+                                    <i class="bi bi-credit-card"></i> Método de Pago Preferido *
+                                </label>
+                                {{ form.id_paymentmethod }}
+                                {% if form.id_paymentmethod.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.id_paymentmethod.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Frecuencia de Compra -->
+                            <div class="col-md-6">
+                                <label for="{{ form.freq_purchase.id_for_label }}" class="form-label">
+                                    <i class="bi bi-arrow-repeat"></i> Frecuencia de Compra *
+                                </label>
+                                {{ form.freq_purchase }}
+                                {% if form.freq_purchase.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.freq_purchase.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Compras Previas -->
+                            <div class="col-md-6">
+                                <label for="{{ form.prev_purchases.id_for_label }}" class="form-label">
+                                    <i class="bi bi-cart-check"></i> Compras Previas *
+                                </label>
+                                {{ form.prev_purchases }}
+                                {% if form.prev_purchases.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.prev_purchases.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Estado de Suscripción -->
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    {{ form.sub_status }}
+                                    <label class="form-check-label" for="{{ form.sub_status.id_for_label }}">
+                                        <i class="bi bi-star"></i> Estado de Suscripción Activa
+                                    </label>
+                                    {% if form.sub_status.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.sub_status.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'customers_list' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Guardar Cliente
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Ayuda -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body">
+                    <h6 class="mb-3">
+                        <i class="bi bi-info-circle"></i> Información de ayuda
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li>Los campos marcados con (*) son obligatorios</li>
+                        <li>El género debe ser "Male" o "Female"</li>
+                        <li>La frecuencia de compra puede ser: Weekly, Fortnightly, Monthly, etc.</li>
+                        <li>El número de compras previas debe ser 0 o mayor</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('customerForm').addEventListener('submit', function(e) {
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Guardando...';
+    });
+</script>
+{% endblock %}

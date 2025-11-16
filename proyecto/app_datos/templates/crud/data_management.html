@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Datos - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4">
+                <i class="bi bi-database"></i> Panel de Gestión de Datos
+            </h1>
+            <p class="lead text-muted">Administra y controla todos los datos del sistema</p>
+        </div>
+    </div>
+
+    <!-- Estadísticas principales -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Clientes</h6>
+                            <h2 class="mb-0">{{ stats.customers }}</h2>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                            <i class="bi bi-people fs-1 text-primary"></i>
+                        </div>
+                    </div>
+                    <a href="{% url 'customers_list' %}" class="btn btn-sm btn-outline-primary mt-3 w-100">
+                        <i class="bi bi-arrow-right"></i> Ver Clientes
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Productos</h6>
+                            <h2 class="mb-0">{{ stats.products }}</h2>
+                        </div>
+                        <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                            <i class="bi bi-box-seam fs-1 text-success"></i>
+                        </div>
+                    </div>
+                    <a href="{% url 'products_list' %}" class="btn btn-sm btn-outline-success mt-3 w-100">
+                        <i class="bi bi-arrow-right"></i> Ver Productos
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Transacciones</h6>
+                            <h2 class="mb-0">{{ stats.transactions }}</h2>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                            <i class="bi bi-receipt fs-1 text-warning"></i>
+                        </div>
+                    </div>
+                    <a href="{% url 'transactions_list' %}" class="btn btn-sm btn-outline-warning mt-3 w-100">
+                        <i class="bi bi-arrow-right"></i> Ver Transacciones
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1">Categorías</h6>
+                            <h2 class="mb-0">{{ stats.categories }}</h2>
+                        </div>
+                        <div class="bg-info bg-opacity-10 rounded-circle p-3">
+                            <i class="bi bi-tags fs-1 text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones rápidas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-lightning-charge"></i> Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6 col-lg-3">
+                            <a href="{% url 'customer_add' %}" class="btn btn-outline-primary w-100 py-3">
+                                <i class="bi bi-person-plus fs-3 d-block mb-2"></i>
+                                Agregar Cliente
+                            </a>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <a href="{% url 'product_add' %}" class="btn btn-outline-success w-100 py-3">
+                                <i class="bi bi-box-seam fs-3 d-block mb-2"></i>
+                                Agregar Producto
+                            </a>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <a href="{% url 'transaction_add' %}" class="btn btn-outline-warning w-100 py-3">
+                                <i class="bi bi-receipt-cutoff fs-3 d-block mb-2"></i>
+                                Nueva Transacción
+                            </a>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <a href="{% url 'csv_upload' %}" class="btn btn-outline-info w-100 py-3">
+                                <i class="bi bi-file-earmark-arrow-up fs-3 d-block mb-2"></i>
+                                Cargar CSV
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Datos de catálogo -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-grid"></i> Datos de Catálogo
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                                <div>
+                                    <i class="bi bi-credit-card text-primary me-2"></i>
+                                    <strong>Métodos</strong> de Pago</strong>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">{{ stats.payment_methods }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                                <div>
+                                    <i class="bi bi-geo-alt text-success me-2"></i>
+                                    <strong>Ubicaciones</strong>
+                                </div>
+                                <span class="badge bg-success rounded-pill">{{ stats.locations }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                                <div>
+                                    <i class="bi bi-palette text-warning me-2"></i>
+                                    <strong>Colores</strong>
+                                </div>
+                                <span class="badge bg-warning rounded-pill">{{ stats.colors }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                                <div>
+                                    <i class="bi bi-rulers text-info me-2"></i>
+                                    <strong>Tallas</strong>
+                                </div>
+                                <span class="badge bg-info rounded-pill">{{ stats.sizes }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                                <div>
+                                    <i class="bi bi-calendar3 text-danger me-2"></i>
+                                    <strong>Temporadas</strong>
+                                </div>
+                                <span class="badge bg-danger rounded-pill">{{ stats.seasons }}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                                <div>
+                                    <i class="bi bi-truck text-secondary me-2"></i>
+                                    <strong>Tipos de Envío</strong>
+                                </div>
+                                <span class="badge bg-secondary rounded-pill">{{ stats.shipping_types }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

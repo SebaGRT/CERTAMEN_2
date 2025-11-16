@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}Carga desde CSV - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4">
+                <i class="bi bi-file-earmark-arrow-up"></i> Carga desde CSV
+            </h1>
+            <p class="lead text-muted">Importa datos masivamente desde archivos CSV</p>
+        </div>
+    </div>
+
+    <!-- Estadísticas actuales -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-people fs-1 text-primary mb-2"></i>
+                    <h3 class="mb-0">{{ stats.customers }}</h3>
+                    <p class="text-muted mb-0">Clientes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-box-seam fs-1 text-success mb-2"></i>
+                    <h3 class="mb-0">{{ stats.products }}</h3>
+                    <p class="text-muted mb-0">Productos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-receipt fs-1 text-warning mb-2"></i>
+                    <h3 class="mb-0">{{ stats.transactions }}</h3>
+                    <p class="text-muted mb-0">Transacciones</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="bi bi-geo-alt fs-1 text-info mb-2"></i>
+                    <h3 class="mb-0">{{ stats.locations }}</h3>
+                    <p class="text-muted mb-0">Ubicaciones</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario de carga -->
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-gradient bg-primary text-white py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-cloud-upload"></i> Cargar Archivo CSV
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" id="csvForm">
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label for="{{ form.csv_file.id_for_label }}" class="form-label">
+                                <i class="bi bi-file-earmark-spreadsheet"></i> Seleccionar archivo CSV
+                            </label>
+                            {{ form.csv_file }}
+                            <div class="form-text">
+                                <i class="bi bi-info-circle"></i>
+                                Formatos aceptados: .csv | Archivo: shopping_trends.csv
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info border-0" role="alert">
+                            <h6 class="alert-heading">
+                                <i class="bi bi-lightbulb"></i> Información Importante
+                            </h6>
+                            <ul class="mb-0">
+                                <li>El sistema detecta automáticamente registros duplicados</li>
+                                <li>Los duplicados no se insertarán nuevamente</li>
+                                <li>Se mostrará un resumen detallado al finalizar</li>
+                                <li>La operación se realiza de forma transaccional</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg" id="uploadBtn">
+                                <i class="bi bi-upload"></i> Iniciar Carga
+                            </button>
+                            <a href="{% url 'data_management' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Instrucciones -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-question-circle"></i> ¿Cómo funciona?
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ol class="mb-0">
+                        <li class="mb-2">
+                            <strong>Sel</strong>ecciona el archivo:</strong> Elige el archivo shopping_trends.csv
+                        </li>
+                        <li class="mb-2">
+                            <strong>Haz clic en "Iniciar Carga":</strong> El sistema procesará el archivo
+                        </li>
+                        <li class="mb-2">
+                            <strong>Espera el resultado:</strong> Verás un mensaje con las estadísticas de la importación
+                        </li>
+                        <li class="mb-0">
+                            <strong>Control de duplicados:</strong> Si ejecutas la carga múltiples veces, solo se agregarán registros nuevos
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Estructura esperada del CSV -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-table"></i> Estructura del CSV
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">El archivo CSV debe contener las siguientes columnas:</p>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Columna</th>
+                                    <th>Descripción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>Customer ID</code></td>
+                                    <td>Identificador único del cliente</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Age</code></td>
+                                    <td>Edad del cliente</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Gender</code></td>
+                                    <td>Género del cliente</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Item Purchased</code></td>
+                                    <td>Producto comprado</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Category</code></td>
+                                    <td>Categoría del producto</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Purchase Amount (USD)</code></td>
+                                    <td>Monto de la compra</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Location</code></td>
+                                    <td>Ubicación/Estado</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted">
+                                        <em>...y más columnas según el dataset</em>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('csvForm').addEventListener('submit', function(e) {
+        const btn = document.getElementById('uploadBtn');
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando...';
+        btn.disabled = true;
+    });
+</script>
+{% endblock %}

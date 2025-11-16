@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Listado de Transacciones - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-4">
+                <i class="bi bi-receipt"></i> Transacciones
+            </h1>
+            <p class="lead text-muted">Gestiona todas las transacciones del sistema</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'transaction_add' %}" class="btn btn-warning btn-lg">
+                <i class="bi bi-plus-circle"></i> Nueva Transacción
+            </a>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <h3 class="text-warning">{{ transactions.count }}</h3>
+                            <p class="text-muted mb-0">Total Transacciones</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h3 class="text-primary">{{ transactions|length }}</h3>
+                            <p class="text-muted mb-0">En esta página</p>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'data_management' %}" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-arrow-left"></i> Volver
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{% url 'csv_upload' %}" class="btn btn-outline-info btn-sm">
+                                <i class="bi bi-file-earmark-arrow-up"></i> Cargar CSV
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de transacciones -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-ul"></i> Historial Completo
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if transactions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Cliente</th>
+                                    <th>Producto</th>
+                                    <th>Monto</th>
+                                    <th>Fecha</th>
+                                    <th>Calificación</th>
+                                    <th>Método Pago</th>
+                                    <th>Envío</th>
+                                    <th>Descuento</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in transactions %}
+                                <tr>
+                                    <td><strong>#{{ transaction.id_transaction }}</strong></td>
+                                    <td>
+                                        <i class="bi bi-person text-muted"></i>
+                                        Cliente #{{ transaction.id_customer.id_customer }}
+                                        <br>
+                                        <small class="text-muted">
+                                            {{ transaction.id_customer.age }} años,
+                                            {{ transaction.id_customer.gender }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-box text-muted"></i>
+                                        {{ transaction.id_product.name|truncatewords:3 }}
+                                    </td>
+                                    <td>
+                                        <strong class="text-success">
+                                            ${{ transaction.purchase_amount }}
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        {% if transaction.purchase_date %}
+                                        <i class="bi bi-calendar3"></i>
+                                        {{ transaction.purchase_date|date:"d/m/Y" }}
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if transaction.review_rate %}
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-star-fill"></i>
+                                            {{ transaction.review_rate }}
+                                        </span>
+                                        {% else %}
+                                        <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            <i class="bi bi-credit-card"></i>
+                                            {{ transaction.id_paymentmethod.name }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            <i class="bi bi-truck"></i>
+                                            {{ transaction.id_shipping.name }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        {% if transaction.dsct_applied %}
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check"></i> Sí
+                                        </span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">No</span>
+                                        {% endif %}
+                                        {% if transaction.promo_used %}
+                                        <br>
+                                        <small class="badge bg-info mt-1">Promo</small>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{% url 'transaction_edit' transaction.id_transaction %}"
+                                               class="btn btn-outline-warning"
+                                               title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <button onclick="confirmDelete('{% url 'transaction_delete' transaction.id_transaction %}', 'Transacción #{{ transaction.id_transaction }}')"
+                                                    class="btn btn-outline-danger"
+                                                    title="Eliminar">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-inbox fs-1 text-muted"></i>
+                        <p class="lead text-muted mt-3">No hay transacciones registradas</p>
+                        <a href="{% url 'transaction_add' %}" class="btn btn-warning">
+                            <i class="bi bi-plus-circle"></i> Agregar Primera Transacción
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

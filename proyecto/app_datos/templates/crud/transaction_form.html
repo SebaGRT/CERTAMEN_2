@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4">
+                <i class="bi bi-receipt"></i> {{ title }}
+            </h1>
+            <p class="lead text-muted">Complete el formulario con los datos de la transacción</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning text-dark py-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clipboard-data"></i> Información de la Transacción
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" id="transactionForm">
+                        {% csrf_token %}
+
+                        <div class="row g-3">
+                            <!-- Cliente -->
+                            <div class="col-md-6">
+                                <label for="{{ form.id_customer.id_for_label }}" class="form-label">
+                                    <i class="bi bi-person"></i> Cliente *
+                                </label>
+                                {{ form.id_customer }}
+                                {% if form.id_customer.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.id_customer.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Producto -->
+                            <div class="col-md-6">
+                                <label for="{{ form.id_product.id_for_label }}" class="form-label">
+                                    <i class="bi bi-box-seam"></i> Producto *
+                                </label>
+                                {{ form.id_product }}
+                                {% if form.id_product.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.id_product.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Monto de Compra -->
+                            <div class="col-md-6">
+                                <label for="{{ form.purchase_amount.id_for_label }}" class="form-label">
+                                    <i class="bi bi-currency-dollar"></i> Monto de Compra (USD) *
+                                </label>
+                                {{ form.purchase_amount }}
+                                {% if form.purchase_amount.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.purchase_amount.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Fecha de Compra -->
+                            <div class="col-md-6">
+                                <label for="{{ form.purchase_date.id_for_label }}" class="form-label">
+                                    <i class="bi bi-calendar3"></i> Fecha de Compra
+                                </label>
+                                {{ form.purchase_date }}
+                                {% if form.purchase_date.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.purchase_date.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Calificación -->
+                            <div class="col-md-6">
+                                <label for="{{ form.review_rate.id_for_label }}" class="form-label">
+                                    <i class="bi bi-star"></i> Calificación (0-5)
+                                </label>
+                                {{ form.review_rate }}
+                                {% if form.review_rate.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.review_rate.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Método de Pago -->
+                            <div class="col-md-6">
+                                <label for="{{ form.id_paymentmethod.id_for_label }}" class="form-label">
+                                    <i class="bi bi-credit-card"></i> Método de Pago *
+                                </label>
+                                {{ form.id_paymentmethod }}
+                                {% if form.id_paymentmethod.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.id_paymentmethod.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Tipo de Envío -->
+                            <div class="col-md-6">
+                                <label for="{{ form.id_shipping.id_for_label }}" class="form-label">
+                                    <i class="bi bi-truck"></i> Tipo de Envío *
+                                </label>
+                                {{ form.id_shipping }}
+                                {% if form.id_shipping.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.id_shipping.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Promoción -->
+                            <div class="col-md-6">
+                                <label for="{{ form.id_promotion.id_for_label }}" class="form-label">
+                                    <i class="bi bi-gift"></i> Promoción
+                                </label>
+                                {{ form.id_promotion }}
+                                {% if form.id_promotion.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ form.id_promotion.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Descuento Aplicado -->
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    {{ form.dsct_applied }}
+                                    <label class="form-check-label" for="{{ form.dsct_applied.id_for_label }}">
+                                        <i class="bi bi-percent"></i> Descuento Aplicado
+                                    </label>
+                                    {% if form.dsct_applied.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.dsct_applied.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Promoción Usada -->
+                            <div class="col-md-4">
+                                <div class="form-check form-switch">
+                                    {{ form.promo_used }}
+                                    <label class="form-check-label" for="{{ form.promo_used.id_for_label }}">
+                                        <i class="bi bi-tag"></i> Código Promocional Usado
+                                    </label>
+                                    {% if form.promo_used.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.promo_used.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'transactions_list' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-check-circle"></i> Guardar Transacción
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Ayuda -->
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-body">
+                    <h6 class="mb-3">
+                        <i class="bi bi-info-circle"></i> Información de ayuda
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li>Los campos marcados con (*) son obligatorios</li>
+                        <li>El monto debe ser mayor a 0 y puede tener hasta 2 decimales</li>
+                        <li>La calificación es opcional y debe estar entre 0 y 5</li>
+                        <li>La fecha de compra es opcional, se puede dejar vacía</li>
+                        <li>Active "Código Promocional Usado" si el cliente utilizó una promoción</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('transactionForm').addEventListener('submit', function(e) {
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Guardando...';
+    });
+</script>
+{% endblock %}

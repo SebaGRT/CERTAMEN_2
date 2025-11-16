@@ -1,8 +1,42 @@
-from django.shortcuts import render
-import random
-import pandas as pd
+import csv
+import io
 import os
+import random
+
+import pandas as pd
 from django.conf import settings
+from django.contrib import messages
+from django.db import transaction
+from django.db.models import Count
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .forms import (
+    CategoryForm,
+    ColorForm,
+    CSVUploadForm,
+    CustomerForm,
+    LocationForm,
+    PaymentMethodForm,
+    ProductForm,
+    PromotionForm,
+    SeasonForm,
+    ShippingTypeForm,
+    SizeForm,
+    TransactionForm,
+)
+from .models import (
+    Categories,
+    Colors,
+    Customers,
+    Locations,
+    PaymentMethods,
+    Products,
+    Promotions,
+    Seasons,
+    ShippingTypes,
+    Sizes,
+    Transactions,
+)
 
 # Create your views here.
 
@@ -15,40 +49,13 @@ def load_shopping_data():
 
 
 def dashboard_home(request):
+    # Obtener estadísticas de la base de datos
+    total_customers = Customers.objects.count()
+    total_transactions = Transactions.objects.count()
+    total_products = Products.objects.count()
+
     # Definir todos los gráficos con su información
     graficos = [
-        {
-            "id": 1,
-            "titulo": "Total Alumnos",
-            "descripcion": "Contador total de alumnos",
-            "categoria": "Académico",
-            "url": "total_alumnos",
-            "color": "primary",
-        },
-        {
-            "id": 2,
-            "titulo": "Total por Secciones",
-            "descripcion": "Distribución por sección",
-            "categoria": "Académico",
-            "url": "total_secciones",
-            "color": "info",
-        },
-        {
-            "id": 3,
-            "titulo": "Promedio Nota 1",
-            "descripcion": "Promedio por ramos",
-            "categoria": "Académico",
-            "url": "notas1_ramos",
-            "color": "success",
-        },
-        {
-            "id": 4,
-            "titulo": "Promedio TVD",
-            "descripcion": "TVD por secciones",
-            "categoria": "Académico",
-            "url": "promedio_tvd",
-            "color": "warning",
-        },
         {
             "id": 5,
             "titulo": "Histograma Poder Adquisitivo",
@@ -147,7 +154,12 @@ def dashboard_home(request):
         },
     ]
 
-    context = {"graficos": graficos}
+    context = {
+        "graficos": graficos,
+        "total_customers": total_customers,
+        "total_transactions": total_transactions,
+        "total_products": total_products,
+    }
     return render(request, "dashboard_home.html", context)
 
 
@@ -363,3 +375,338 @@ def temporada_metodo_pago(request):
         "datasets": datasets,
     }
     return render(request, "shopping/temporada_metodo_pago.html", context)
+
+
+# ==================== CRUD OPERATIONS ====================
+
+
+# CUSTOMERS CRUD
+def customers_list(request):
+    customers = Customers.objects.all()
+    context = {"customers": customers}
+    return render(request, "crud/customers_list.html", context)
+
+
+def customer_add(request):
+    if request.method == "POST":
+        form = CustomerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Cliente agregado exitosamente!")
+            return redirect("customers_list")
+        else:
+            messages.error(request, "Error al agregar el cliente. Verifique los datos.")
+    else:
+        form = CustomerForm()
+
+    context = {"form": form, "title": "Agregar Cliente"}
+    return render(request, "crud/customer_form.html", context)
+
+
+def customer_edit(request, pk):
+    customer = get_object_or_404(Customers, id_customer=pk)
+
+    if request.method == "POST":
+        form = CustomerForm(request.POST, instance=customer)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Cliente actualizado exitosamente!")
+            return redirect("customers_list")
+        else:
+            messages.error(request, "Error al actualizar el cliente.")
+    else:
+        form = CustomerForm(instance=customer)
+
+    context = {"form": form, "title": "Editar Cliente", "customer": customer}
+    return render(request, "crud/customer_form.html", context)
+
+
+def customer_delete(request, pk):
+    customer = get_object_or_404(Customers, id_customer=pk)
+    customer.delete()
+    messages.success(request, "Cliente eliminado exitosamente!")
+    return redirect("customers_list")
+
+
+# TRANSACTIONS CRUD
+def transactions_list(request):
+    transactions = Transactions.objects.all().select_related(
+        "id_customer", "id_product", "id_paymentmethod", "id_shipping"
+    )
+    context = {"transactions": transactions}
+    return render(request, "crud/transactions_list.html", context)
+
+
+def transaction_add(request):
+    if request.method == "POST":
+        form = TransactionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Transacción agregada exitosamente!")
+            return redirect("transactions_list")
+        else:
+            messages.error(request, "Error al agregar la transacción.")
+    else:
+        form = TransactionForm()
+
+    context = {"form": form, "title": "Agregar Transacción"}
+    return render(request, "crud/transaction_form.html", context)
+
+
+def transaction_edit(request, pk):
+    transaction = get_object_or_404(Transactions, id_transaction=pk)
+
+    if request.method == "POST":
+        form = TransactionForm(request.POST, instance=transaction)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Transacción actualizada exitosamente!")
+            return redirect("transactions_list")
+        else:
+            messages.error(request, "Error al actualizar la transacción.")
+    else:
+        form = TransactionForm(instance=transaction)
+
+    context = {"form": form, "title": "Editar Transacción", "transaction": transaction}
+    return render(request, "crud/transaction_form.html", context)
+
+
+def transaction_delete(request, pk):
+    transaction = get_object_or_404(Transactions, id_transaction=pk)
+    transaction.delete()
+    messages.success(request, "Transacción eliminada exitosamente!")
+    return redirect("transactions_list")
+
+
+# PRODUCTS CRUD
+def products_list(request):
+    products = Products.objects.all().select_related(
+        "id_category", "id_size", "id_color", "id_season"
+    )
+    context = {"products": products}
+    return render(request, "crud/products_list.html", context)
+
+
+def product_add(request):
+    if request.method == "POST":
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Producto agregado exitosamente!")
+            return redirect("products_list")
+        else:
+            messages.error(request, "Error al agregar el producto.")
+    else:
+        form = ProductForm()
+
+    context = {"form": form, "title": "Agregar Producto"}
+    return render(request, "crud/product_form.html", context)
+
+
+def product_edit(request, pk):
+    product = get_object_or_404(Products, id_product=pk)
+
+    if request.method == "POST":
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Producto actualizado exitosamente!")
+            return redirect("products_list")
+        else:
+            messages.error(request, "Error al actualizar el producto.")
+    else:
+        form = ProductForm(instance=product)
+
+    context = {"form": form, "title": "Editar Producto", "product": product}
+    return render(request, "crud/product_form.html", context)
+
+
+def product_delete(request, pk):
+    product = get_object_or_404(Products, id_product=pk)
+    product.delete()
+    messages.success(request, "Producto eliminado exitosamente!")
+    return redirect("products_list")
+
+
+# ==================== CSV UPLOAD ====================
+
+
+def csv_upload(request):
+    if request.method == "POST":
+        form = CSVUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            csv_file = request.FILES["csv_file"]
+
+            # Verificar que sea un archivo CSV
+            if not csv_file.name.endswith(".csv"):
+                messages.error(request, "El archivo debe ser un CSV.")
+                return redirect("csv_upload")
+
+            try:
+                # Leer el archivo CSV
+                decoded_file = csv_file.read().decode("utf-8")
+                io_string = io.StringIO(decoded_file)
+                reader = csv.DictReader(io_string)
+
+                # Contadores
+                created_count = 0
+                skipped_count = 0
+                error_count = 0
+
+                with transaction.atomic():
+                    for row in reader:
+                        try:
+                            # Procesar cada fila del CSV
+                            # 1. Obtener o crear ubicación
+                            location, _ = Locations.objects.get_or_create(
+                                state=row["Location"]
+                            )
+
+                            # 2. Obtener o crear método de pago
+                            payment_method, _ = PaymentMethods.objects.get_or_create(
+                                name=row["Payment Method"]
+                            )
+
+                            # 3. Obtener o crear preferred payment method
+                            preferred_payment, _ = PaymentMethods.objects.get_or_create(
+                                name=row["Preferred Payment Method"]
+                            )
+
+                            # 4. Verificar si el cliente ya existe (por edad, género, ubicación)
+                            # Para evitar duplicados exactos
+                            customer, created = Customers.objects.get_or_create(
+                                age=int(row["Age"]),
+                                gender=row["Gender"],
+                                id_location=location,
+                                sub_status=row["Subscription Status"].lower() == "yes",
+                                id_paymentmethod=preferred_payment,
+                                freq_purchase=row["Frequency of Purchases"],
+                                prev_purchases=int(row["Previous Purchases"]),
+                            )
+
+                            if not created:
+                                skipped_count += 1
+                                continue
+
+                            # 5. Obtener o crear categoría
+                            category, _ = Categories.objects.get_or_create(
+                                name=row["Category"]
+                            )
+
+                            # 6. Obtener o crear talla
+                            size, _ = Sizes.objects.get_or_create(
+                                size_label=row["Size"]
+                            )
+
+                            # 7. Obtener o crear color
+                            color, _ = Colors.objects.get_or_create(name=row["Color"])
+
+                            # 8. Obtener o crear temporada
+                            season, _ = Seasons.objects.get_or_create(
+                                name=row["Season"]
+                            )
+
+                            # 9. Obtener o crear producto
+                            product, _ = Products.objects.get_or_create(
+                                name=row["Item Purchased"],
+                                defaults={
+                                    "id_category": category,
+                                    "id_size": size,
+                                    "id_color": color,
+                                    "id_season": season,
+                                },
+                            )
+
+                            # 10. Obtener o crear tipo de envío
+                            shipping_type, _ = ShippingTypes.objects.get_or_create(
+                                name=row["Shipping Type"]
+                            )
+
+                            # 11. Crear promoción si se usó
+                            promotion = None
+                            if row["Promo Code Used"].lower() == "yes":
+                                promotion, _ = Promotions.objects.get_or_create(
+                                    promocode=f"PROMO_{row['Customer ID']}",
+                                    defaults={"description": "Promoción aplicada"},
+                                )
+
+                            # 12. Crear transacción
+                            Transactions.objects.create(
+                                id_customer=customer,
+                                id_product=product,
+                                purchase_amount=float(row["Purchase Amount (USD)"]),
+                                review_rate=float(row["Review Rating"]),
+                                id_paymentmethod=payment_method,
+                                id_shipping=shipping_type,
+                                dsct_applied=row["Discount Applied"].lower() == "yes",
+                                promo_used=row["Promo Code Used"].lower() == "yes",
+                                id_promotion=promotion,
+                            )
+
+                            created_count += 1
+
+                        except Exception as e:
+                            error_count += 1
+                            print(f"Error procesando fila: {e}")
+                            continue
+
+                # Mensaje de éxito con estadísticas
+                if created_count > 0:
+                    messages.success(
+                        request,
+                        f"¡Carga completada! Registros creados: {created_count}, "
+                        f"Duplicados omitidos: {skipped_count}, Errores: {error_count}",
+                    )
+                elif skipped_count > 0:
+                    messages.warning(
+                        request,
+                        f"Todos los registros ya existían en la base de datos. "
+                        f"Duplicados omitidos: {skipped_count}",
+                    )
+                else:
+                    messages.error(
+                        request,
+                        f"No se pudieron cargar los datos. Errores: {error_count}",
+                    )
+
+                return redirect("csv_upload")
+
+            except Exception as e:
+                messages.error(request, f"Error al procesar el archivo CSV: {str(e)}")
+                return redirect("csv_upload")
+    else:
+        form = CSVUploadForm()
+
+    # Obtener estadísticas actuales
+    stats = {
+        "customers": Customers.objects.count(),
+        "products": Products.objects.count(),
+        "transactions": Transactions.objects.count(),
+        "categories": Categories.objects.count(),
+        "locations": Locations.objects.count(),
+    }
+
+    context = {"form": form, "stats": stats}
+    return render(request, "crud/csv_upload.html", context)
+
+
+# ==================== DATA MANAGEMENT ====================
+
+
+def data_management(request):
+    """Vista principal para gestión de datos"""
+    stats = {
+        "customers": Customers.objects.count(),
+        "products": Products.objects.count(),
+        "transactions": Transactions.objects.count(),
+        "categories": Categories.objects.count(),
+        "payment_methods": PaymentMethods.objects.count(),
+        "locations": Locations.objects.count(),
+        "colors": Colors.objects.count(),
+        "sizes": Sizes.objects.count(),
+        "seasons": Seasons.objects.count(),
+        "shipping_types": ShippingTypes.objects.count(),
+    }
+
+    context = {"stats": stats}
+    return render(request, "crud/data_management.html", context)
