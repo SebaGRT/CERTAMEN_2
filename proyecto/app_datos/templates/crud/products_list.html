@@ -25,11 +25,11 @@
                 <div class="card-body">
                     <div class="row text-center">
                         <div class="col-md-3">
-                            <h3 class="text-success">{{ products.count }}</h3>
+                            <h3 class="text-success">{{ products.paginator.count }}</h3>
                             <p class="text-muted mb-0">Total Productos</p>
                         </div>
                         <div class="col-md-3">
-                            <h3 class="text-primary">{{ products|length }}</h3>
+                            <h3 class="text-primary">{{ products.object_list|length }}</h3>
                             <p class="text-muted mb-0">En esta página</p>
                         </div>
                         <div class="col-md-3">
@@ -141,6 +141,71 @@
                     </div>
                     {% endif %}
                 </div>
+
+                <!-- Pagination -->
+                {% if products.has_other_pages %}
+                <div class="card-footer bg-white border-0 py-3">
+                    <nav aria-label="Paginación de productos">
+                        <ul class="pagination justify-content-center mb-0">
+                            {% if products.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1" aria-label="Primera">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.previous_page_number }}" aria-label="Anterior">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;&laquo;</span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">&laquo;</span>
+                            </li>
+                            {% endif %}
+
+                            {% for num in products.paginator.page_range %}
+                                {% if products.number == num %}
+                                <li class="page-item active" aria-current="page">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                                {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if products.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.next_page_number }}" aria-label="Siguiente">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.paginator.num_pages }}" aria-label="Última">
+                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;</span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">&raquo;&raquo;</span>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    <p class="text-center text-muted mt-2 mb-0">
+                        Página {{ products.number }} de {{ products.paginator.num_pages }}
+                        ({{ products.paginator.count }} productos en total)
+                    </p>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

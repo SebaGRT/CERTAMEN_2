@@ -6,6 +6,7 @@ import random
 import pandas as pd
 from django.conf import settings
 from django.contrib import messages
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
@@ -382,7 +383,12 @@ def temporada_metodo_pago(request):
 
 # CUSTOMERS CRUD
 def customers_list(request):
-    customers = Customers.objects.all()
+    customers_list = Customers.objects.all().order_by("id_customer")
+    paginator = Paginator(customers_list, 400)  # Show 400 customers per page
+
+    page_number = request.GET.get("page")
+    customers = paginator.get_page(page_number)
+
     context = {"customers": customers}
     return render(request, "crud/customers_list.html", context)
 
@@ -430,9 +436,16 @@ def customer_delete(request, pk):
 
 # TRANSACTIONS CRUD
 def transactions_list(request):
-    transactions = Transactions.objects.all().select_related(
-        "id_customer", "id_product", "id_paymentmethod", "id_shipping"
+    transactions_list = (
+        Transactions.objects.all()
+        .select_related("id_customer", "id_product", "id_paymentmethod", "id_shipping")
+        .order_by("-id_transaction")
     )
+    paginator = Paginator(transactions_list, 400)  # Show 400 transactions per page
+
+    page_number = request.GET.get("page")
+    transactions = paginator.get_page(page_number)
+
     context = {"transactions": transactions}
     return render(request, "crud/transactions_list.html", context)
 
@@ -480,9 +493,16 @@ def transaction_delete(request, pk):
 
 # PRODUCTS CRUD
 def products_list(request):
-    products = Products.objects.all().select_related(
-        "id_category", "id_size", "id_color", "id_season"
+    products_list = (
+        Products.objects.all()
+        .select_related("id_category", "id_size", "id_color", "id_season")
+        .order_by("id_product")
     )
+    paginator = Paginator(products_list, 400)  # Show 400 products per page
+
+    page_number = request.GET.get("page")
+    products = paginator.get_page(page_number)
+
     context = {"products": products}
     return render(request, "crud/products_list.html", context)
 

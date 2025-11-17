@@ -1,15 +1,12 @@
-{% extends "base.html" %}
-
-{% block title %}Listado de Clientes - Dashboard{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Listado de Clientes - Dashboard{%
+endblock %} {% block content %}
 <div class="container-fluid">
     <div class="row mb-4">
         <div class="col-md-8">
-            <h1 class="display-4">
-                <i class="bi bi-people"></i> Clientes
-            </h1>
-            <p class="lead text-muted">Gestiona todos los clientes del sistema</p>
+            <h1 class="display-4"><i class="bi bi-people"></i> Clientes</h1>
+            <p class="lead text-muted">
+                Gestiona todos los clientes del sistema
+            </p>
         </div>
         <div class="col-md-4 text-end">
             <a href="{% url 'customer_add' %}" class="btn btn-primary btn-lg">
@@ -25,21 +22,32 @@
                 <div class="card-body">
                     <div class="row text-center">
                         <div class="col-md-3">
-                            <h3 class="text-primary">{{ customers.paginator.count }}</h3>
+                            <h3 class="text-primary">
+                                {{ customers.paginator.count }}
+                            </h3>
                             <p class="text-muted mb-0">Total Clientes</p>
                         </div>
                         <div class="col-md-3">
-                            <h3 class="text-success">{{ customers.object_list|length }}</h3>
+                            <h3 class="text-success">
+                                {{ customers.object_list|length }}
+                            </h3>
                             <p class="text-muted mb-0">En esta página</p>
                         </div>
                         <div class="col-md-3">
-                            <a href="{% url 'data_management' %}" class="btn btn-outline-secondary btn-sm">
+                            <a
+                                href="{% url 'data_management' %}"
+                                class="btn btn-outline-secondary btn-sm"
+                            >
                                 <i class="bi bi-arrow-left"></i> Volver
                             </a>
                         </div>
                         <div class="col-md-3">
-                            <a href="{% url 'csv_upload' %}" class="btn btn-outline-info btn-sm">
-                                <i class="bi bi-file-earmark-arrow-up"></i> Cargar CSV
+                            <a
+                                href="{% url 'csv_upload' %}"
+                                class="btn btn-outline-info btn-sm"
+                            >
+                                <i class="bi bi-file-earmark-arrow-up"></i>
+                                Cargar CSV
                             </a>
                         </div>
                     </div>
@@ -77,50 +85,71 @@
                             <tbody>
                                 {% for customer in customers %}
                                 <tr>
-                                    <td><strong>#{{ customer.id_customer }}</strong></td>
+                                    <td>
+                                        <strong
+                                            >#{{ customer.id_customer }}</strong
+                                        >
+                                    </td>
                                     <td>{{ customer.age }} años</td>
                                     <td>
                                         {% if customer.gender == 'Male' %}
                                         <span class="badge bg-primary">
-                                            <i class="bi bi-gender-male"></i> {{ customer.gender }}
+                                            <i class="bi bi-gender-male"></i> {{
+                                            customer.gender }}
                                         </span>
                                         {% else %}
                                         <span class="badge bg-danger">
-                                            <i class="bi bi-gender-female"></i> {{ customer.gender }}
+                                            <i class="bi bi-gender-female"></i>
+                                            {{ customer.gender }}
                                         </span>
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <i class="bi bi-geo-alt text-muted"></i> {{ customer.id_location.state }}
+                                        <i class="bi bi-geo-alt text-muted"></i>
+                                        {{ customer.id_location.state }}
                                     </td>
                                     <td>
                                         {% if customer.sub_status %}
                                         <span class="badge bg-success">
-                                            <i class="bi bi-check-circle"></i> Activa
+                                            <i class="bi bi-check-circle"></i>
+                                            Activa
                                         </span>
                                         {% else %}
                                         <span class="badge bg-secondary">
-                                            <i class="bi bi-x-circle"></i> Inactiva
+                                            <i class="bi bi-x-circle"></i>
+                                            Inactiva
                                         </span>
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <i class="bi bi-credit-card text-muted"></i> {{ customer.id_paymentmethod.name }}
+                                        <i
+                                            class="bi bi-credit-card text-muted"
+                                        ></i>
+                                        {{ customer.id_paymentmethod.name }}
                                     </td>
                                     <td>{{ customer.freq_purchase }}</td>
                                     <td>
-                                        <span class="badge bg-info">{{ customer.prev_purchases }}</span>
+                                        <span class="badge bg-info"
+                                            >{{ customer.prev_purchases }}</span
+                                        >
                                     </td>
                                     <td class="text-end">
-                                        <div class="btn-group btn-group-sm" role="group">
-                                            <a href="{% url 'customer_edit' customer.id_customer %}"
-                                               class="btn btn-outline-primary"
-                                               title="Editar">
+                                        <div
+                                            class="btn-group btn-group-sm"
+                                            role="group"
+                                        >
+                                            <a
+                                                href="{% url 'customer_edit' customer.id_customer %}"
+                                                class="btn btn-outline-primary"
+                                                title="Editar"
+                                            >
                                                 <i class="bi bi-pencil"></i>
                                             </a>
-                                            <button onclick="confirmDelete('{% url 'customer_delete' customer.id_customer %}', 'Cliente #{{ customer.id_customer }}')"
-                                                    class="btn btn-outline-danger"
-                                                    title="Eliminar">
+                                            <button
+                                                onclick="confirmDelete('{% url 'customer_delete' customer.id_customer %}', 'Cliente #{{ customer.id_customer }}')"
+                                                class="btn btn-outline-danger"
+                                                title="Eliminar"
+                                            >
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>
@@ -133,9 +162,15 @@
                     {% else %}
                     <div class="text-center py-5">
                         <i class="bi bi-inbox fs-1 text-muted"></i>
-                        <p class="lead text-muted mt-3">No hay clientes registrados</p>
-                        <a href="{% url 'customer_add' %}" class="btn btn-primary">
-                            <i class="bi bi-person-plus"></i> Agregar Primer Cliente
+                        <p class="lead text-muted mt-3">
+                            No hay clientes registrados
+                        </p>
+                        <a
+                            href="{% url 'customer_add' %}"
+                            class="btn btn-primary"
+                        >
+                            <i class="bi bi-person-plus"></i> Agregar Primer
+                            Cliente
                         </a>
                     </div>
                     {% endif %}
@@ -148,12 +183,22 @@
                         <ul class="pagination justify-content-center mb-0">
                             {% if customers.has_previous %}
                             <li class="page-item">
-                                <a class="page-link" href="?page=1" aria-label="Primera">
-                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                <a
+                                    class="page-link"
+                                    href="?page=1"
+                                    aria-label="Primera"
+                                >
+                                    <span aria-hidden="true"
+                                        >&laquo;&laquo;</span
+                                    >
                                 </a>
                             </li>
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ customers.previous_page_number }}" aria-label="Anterior">
+                                <a
+                                    class="page-link"
+                                    href="?page={{ customers.previous_page_number }}"
+                                    aria-label="Anterior"
+                                >
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>
@@ -164,29 +209,38 @@
                             <li class="page-item disabled">
                                 <span class="page-link">&laquo;</span>
                             </li>
-                            {% endif %}
-
-                            {% for num in customers.paginator.page_range %}
-                                {% if customers.number == num %}
-                                <li class="page-item active" aria-current="page">
-                                    <span class="page-link">{{ num }}</span>
-                                </li>
-                                {% elif num > customers.number|add:'-3' and num < customers.number|add:'3' %}
-                                <li class="page-item">
-                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                                </li>
-                                {% endif %}
-                            {% endfor %}
-
-                            {% if customers.has_next %}
+                            {% endif %} {% for num in
+                            customers.paginator.page_range %} {% if
+                            customers.number == num %}
+                            <li class="page-item active" aria-current="page">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                            {% elif num > customers.number|add:'-3' and num <
+                            customers.number|add:'3' %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ customers.next_page_number }}" aria-label="Siguiente">
+                                <a class="page-link" href="?page={{ num }}"
+                                    >{{ num }}</a
+                                >
+                            </li>
+                            {% endif %} {% endfor %} {% if customers.has_next %}
+                            <li class="page-item">
+                                <a
+                                    class="page-link"
+                                    href="?page={{ customers.next_page_number }}"
+                                    aria-label="Siguiente"
+                                >
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ customers.paginator.num_pages }}" aria-label="Última">
-                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                <a
+                                    class="page-link"
+                                    href="?page={{ customers.paginator.num_pages }}"
+                                    aria-label="Última"
+                                >
+                                    <span aria-hidden="true"
+                                        >&raquo;&raquo;</span
+                                    >
                                 </a>
                             </li>
                             {% else %}
@@ -200,8 +254,9 @@
                         </ul>
                     </nav>
                     <p class="text-center text-muted mt-2 mb-0">
-                        Página {{ customers.number }} de {{ customers.paginator.num_pages }}
-                        ({{ customers.paginator.count }} clientes en total)
+                        Página {{ customers.number }} de {{
+                        customers.paginator.num_pages }} ({{
+                        customers.paginator.count }} clientes en total)
                     </p>
                 </div>
                 {% endif %}
@@ -209,9 +264,7 @@
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
+{% endblock %} {% block extra_js %}
 <script>
     // SweetAlert2 ya está disponible desde base.html
     // La función confirmDelete() ya está definida en base.html
